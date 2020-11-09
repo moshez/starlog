@@ -28,6 +28,7 @@ def decrement_count(initial_value, label):
 
 def journal_to(title, fname, reactor, runner):
     textarea = ipywidgets.Textarea(continuous_update=False)
+    textarea.rows = 20
     clock = ipywidgets.Label("Time left:")
     output = ipywidgets.Output()
     box = ipywidgets.VBox([
