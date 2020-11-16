@@ -4,7 +4,7 @@ import textwrap
 import sys
 
 def ctime(log):
-    return datetime.datetime.fromtimestamp(log.stat().st_ctime)
+    return datetime.datetime.fromisoformat(log.stem)
 
 def print_logs(path, current, outfile):
     cutoff =  current - datetime.timedelta(days=7)
