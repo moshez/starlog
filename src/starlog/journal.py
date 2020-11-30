@@ -12,6 +12,9 @@ runner = functools.partial(
     check=True
 )
 
+class DoneError(Exception):
+    pass
+
 def decrement_count(initial_value, label):
     current_value = initial_value
     minute = datetime.timedelta(minutes=1)
@@ -23,7 +26,7 @@ def decrement_count(initial_value, label):
         seconds = int(left.total_seconds())
         label.value = f" Time left: {minutes}:{seconds:02}"
         if current_value < 0:
-            raise ValueError("finished")
+            raise DoneError("finished")
     return decrement
 
 def journal_to(title, fname, reactor, runner):
@@ -43,25 +46,26 @@ def journal_to(title, fname, reactor, runner):
         clock
     ))
     call.reactor = reactor
-    call.start(1)
+    done = call.start(1)
+    done.addErrback(lambda x: x.trap(DoneError))
     def run(*args):
         runner(list(args))
     def saver(_ignored):
-        with output:
-            with open(fname, "w") as fpout:
-                fpout.write(textarea.value)
-            print("Saving...", end='')
-            try:
-                run("git", "add", fname)
-                run("git", "commit", "-m", f"updated {fname}")
-                run("git", "push")
-            except subprocess.CalledProcessError as exc:
-                print("Could not save")
-                print(exc.stdout)
-                print(exc.stderr)
-            else:
-                 print("Done")
+        with open(fname, "w") as fpout:
+            fpout.write(textarea.value)
+        output.append_stdout("Saving...")
+        try:
+            run("git", "add", fname)
+            run("git", "commit", "-m", f"updated {fname}")
+            run("git", "push")
+        except subprocess.CalledProcessError as exc:
+            output.append_stdout("\nCould not save:\n")
+            output.append_stdout(exc.stdout)
+            output.append_stdout(exc.stderr)
+        else:
+            output.append_stdout("Done\n")
     textarea.observe(saver, names="value")
+    done.addCallback(saver)
     return box
 
 def journal_date(today, runner, reactor):
