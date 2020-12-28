@@ -16,5 +16,8 @@ def print_logs(path, current, outfile):
     recent_files.sort()
     for log in recent_files:
         text = log.read_text()
-        text = textwrap.fill(text)
-        print(log.name, "\n\n", text, "\n", file=outfile)
+        print(log.name, "\n\n", file=outfile)
+        for line in text.splitlines():
+            line = textwrap.fill(line)
+            print(line, file=outfile)
+        print("\n", file=outfile)
