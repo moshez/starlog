@@ -7,7 +7,7 @@ nox.options.envdir = "build/nox"
 PROJECT = "starlog"
 
 
-@nox.session(python=["3.7", "3.8"])
+@nox.session(python=["3.7", "3.8", "3.9"])
 def tests(session):
     """Run test suite with pytest."""
     tmpdir = session.create_tmp()
