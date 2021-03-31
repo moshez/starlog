@@ -72,7 +72,7 @@ def editor(builder):
     )
     builder.ui_main.add_traits(filename=traitlets.Unicode(str(uuid.uuid4())))
 
-def new_text(path, main, isbn, valid_isbn, output, _ignored):
+def new_text(_ignored, path, main, isbn, valid_isbn, output):
     with output:
         filebase = main.trait_values()["filename"]
         if not valid_isbn.value:
@@ -82,7 +82,7 @@ def new_text(path, main, isbn, valid_isbn, output, _ignored):
         filepath = path / f"{parsed_isbn}-{filebase}.txt"
         with open(filepath, "w") as fpout:
             fpout.write(main.value)
-        print("Saved", filename)
+        print("Saved", filepath)
 
 def get_existing_isbns(path):
     for child in path.glob("*.txt"):
@@ -114,6 +114,6 @@ def combine(path, builder):
 
 def book():
     builder = UIBuilder()
-    combine(builder)
+    combine(pathlib.Path.cwd(), builder)
     return builder.ui_journal
 
