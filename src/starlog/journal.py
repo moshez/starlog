@@ -58,6 +58,7 @@ def make_text_areas(aspects):
             print("="*len(desc), file=res)
             print("", file=res)
             print(area.value, file=res)
+            print("", file=res)
         return res.getvalue()
     areas = dict()
     widgets = []
