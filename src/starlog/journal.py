@@ -103,7 +103,7 @@ def journal_to(aspects, title, fname, reactor, runner):
     widgets, get_text = make_text_areas(aspects)
     output = ipywidgets.Output()
     save_file = functools.partial(saver, fname, get_text, output, runner)
-    maybe_save = debouncer(reactor, save_file, 10)
+    maybe_save = debouncer(reactor, save_file, 2)
     quickly_save = debouncer(reactor, save_file, 0)
     total_seconds = datetime.timedelta(minutes=5).total_seconds()
     done, clock = run_timer(total_seconds, get_text, reactor)
